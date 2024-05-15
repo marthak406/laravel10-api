@@ -69,9 +69,11 @@ class PostController extends Controller
     {
         //find post by ID
         $post = Post::find($id);
-
+        if (is_null($post)) {
+            return new PostResource(false, 'Data tidak ditemukan!', null);
+        }
         //return single post as a resource
-        return new PostResource(true, 'Detail Data Post!', $post);
+        return new PostResource(true, 'Detail Data Post', $post);
     }
 
     /**
