@@ -52,4 +52,10 @@ class RegisterController extends Controller
             return new PostResource(false, 'Unauthorised', 404);
         } 
     }
+
+    public function logout(){
+        auth()->user()->tokens()->delete();
+    
+        return new PostResource(true, 'logged out', null);
+    }
 }
