@@ -43,14 +43,41 @@ class RegisterController extends Controller
      */
     public function login(Request $request)
     {
-        if(Auth::attempt(['email' => $request->email, 'password' => $request->password])){ 
-            $user = Auth::user(); 
-            $success['token'] =  $user->createToken('MyApp')->plainTextToken; 
-            $success['name'] =  $user->name;
-            return new PostResource(true, 'User login successfully.', $success);
-        }else{ 
-            return new PostResource(false, 'Unauthorised', 404);
-        } 
+        // Validasi input
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email',
+            'password' => 'required|string',
+        ]);
+
+        // Jika validasi gagal
+        if ($validator->fails()) {
+            return new PostResource(false, 'Validation Error', [
+                'errors' => $validator->errors()
+            ]);
+        }
+
+        // Cek apakah email ada di database
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user) {
+            // Jika email tidak ditemukan
+            return new PostResource(false, 'Invalid email', [
+                'message' => 'The provided email does not exist.'
+            ]);
+        }
+
+        // Cek password
+        if (!Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
+            // Jika password salah
+            return new PostResource(false, 'Invalid password', [
+                'message' => 'The provided password is incorrect.'
+            ]);
+        }
+
+        // Jika login berhasil
+        $success['token'] = $user->createToken('MyApp')->plainTextToken;
+        $success['name'] = $user->name;
+        return new PostResource(true, 'User login successfully.', $success);
     }
 
     public function logout(){

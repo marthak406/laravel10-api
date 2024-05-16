@@ -56,7 +56,7 @@ class PostController extends Controller
         ]);
 
         //return response
-        return new PostResource(true, 'Data Post Berhasil Ditambahkan!', $post);
+        return new PostResource(true, 'Data Successfully Added!', $post);
     }
 
     /**
@@ -70,7 +70,7 @@ class PostController extends Controller
         //find post by ID
         $post = Post::find($id);
         if (is_null($post)) {
-            return new PostResource(false, 'Data tidak ditemukan!', null);
+            return new PostResource(false, 'Data not found!', null);
         }
         //return single post as a resource
         return new PostResource(true, 'Detail Data Post', $post);
@@ -126,7 +126,7 @@ class PostController extends Controller
         }
 
         //return response
-        return new PostResource(true, 'Data Post Berhasil Diubah!', $post);
+        return new PostResource(true, 'Data Successfully Updated!', $post);
     }
 
     /**
@@ -148,6 +148,6 @@ class PostController extends Controller
         $post->delete();
 
         //return response
-        return new PostResource(true, 'Data Post Berhasil Dihapus!', null);
+        return new PostResource(true, 'Data Successfully Deleted!', null);
     }
 }
