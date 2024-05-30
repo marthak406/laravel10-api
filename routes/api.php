@@ -24,9 +24,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
         
-// Route::middleware('auth:sanctum')->group( function () {
-//     //posts
-//     Route::apiResource('/posts', App\Http\Controllers\Api\PostController::class);
-// });
+Route::middleware('auth:sanctum')->group( function () {
+    //posts
+    Route::apiResource('/posts', App\Http\Controllers\Api\PostController::class);
+});
 
 
