@@ -7,7 +7,6 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Http\JsonResponse;
 use App\Http\Resources\PostResource;
 
 class RegisterController extends Controller
@@ -46,7 +45,7 @@ class RegisterController extends Controller
         // Validasi input
         $validator = Validator::make($request->all(), [
             'email' => 'required|email',
-            'password' => 'required|string',
+            'password' => 'required',
         ]);
 
         // Jika validasi gagal
@@ -61,28 +60,35 @@ class RegisterController extends Controller
 
         if (!$user) {
             // Jika email tidak ditemukan
-            return new PostResource(false, 'Invalid email', [
-                'message' => 'The provided email does not exist.'
-            ]);
+            return response([
+                'success'   => false,
+                'message' => ['The provided email does not exist.']
+            ], 404);
         }
 
         // Cek password
         if (!Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
             // Jika password salah
-            return new PostResource(false, 'Invalid password', [
-                'message' => 'The provided password is incorrect.'
-            ]);
+            return response([
+                'success'   => false,
+                'message' => ['The provided password is incorrect.']
+            ], 404);
         }
 
         // Jika login berhasil
-        $success['token'] = $user->createToken('MyApp')->plainTextToken;
-        $success['name'] = $user->name;
-        return new PostResource(true, 'User login successfully.', $success);
+        $token = $user->createToken('ApiToken')->plainTextToken;
+        $response = [
+            'success'   => true,
+            'user'      => $user,
+            'token'     => $token
+        ];
+        return response($response, 201);
     }
 
     public function logout(){
-        auth()->user()->tokens()->delete();
-    
-        return new PostResource(true, 'logged out', null);
+        auth()->logout();
+        return response()->json([
+            'success'    => true
+        ], 200);
     }
 }
